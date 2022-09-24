@@ -1,36 +1,37 @@
-const express = require("express");
+const express = require('express');
+const Mongodb = require('./mongodb');
+const cors = require('cors');
+
 const app = express();
 const PORT = 5000;
-const MongoClient = require("mongodb").MongoClient;
-
-const url = "mongodb://localhost:5000/db";
-
-const client = new MongoClient(url);
-client.connect();
-const db = client.db("login_demo");
-const database = client.db("login_demo");
-const members = database.collection("member");
-const query = async (acc) => {
-  const member = await members.findOne({ account: acc });
-  return member;
-};
-
+app.use(cors());
 app.use(express.json());
 
-let result = query("zzz");
-console.log(`result`, result);
+async function main() {
+  let mongodb = new Mongodb('login_demo');
+  await mongodb.start();
 
-app.get("/", function (req, res) {
-  // do something
-  res.send("Hello World!");
-});
+  app.post('/login', async function (req, res) {
+    let result = await mongodb.find('members', req.body);
+    if (result.length > 0) {
+      res.send({ code: '1', msg: `${req.body.account} 登入成功` });
+    } else {
+      res.send({ code: '0', msg: `帳號密碼錯誤` });
+    }
+  });
 
-app.post("/login", function (req, res) {
-  // do something
-  console.log(req.body);
-  res.send({ code: "1" });
-});
+  app.post('/signup', async function (req, res) {
+    let result = await mongodb.find('members', { account: req.body.account });
+    if (result.length > 0) {
+      res.send({ code: '0', msg: `${req.body.account} 此帳號已被註冊` });
+    } else {
+      await mongodb.insert('members', req.body);
+      res.send({ code: '1', msg: `註冊成功` });
+    }
+  });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+  });
+}
+main();
