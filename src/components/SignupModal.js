@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import {
   TextField,
   Button,
@@ -6,10 +6,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-} from '@mui/material';
-import { ALERT_MSG } from '../Constants';
-import Request from '../common/request';
-import { showToast, ToastType } from '../common/toast';
+} from "@mui/material";
+import { ALERT_MSG } from "../Constants";
+import RequestApi from "../common/requestApi";
+import { showToast, ToastType } from "../common/toast";
 
 export default function SignupModal(props) {
   const [isPwConfirmError, setIsPwConfirmError] = useState(false);
@@ -18,9 +18,9 @@ export default function SignupModal(props) {
   const pwConfirmRef = useRef(null);
 
   const resetForm = () => {
-    accountRef.current.value = '';
-    pwRef.current.value = '';
-    pwConfirmRef.current.value = '';
+    accountRef.current.value = "";
+    pwRef.current.value = "";
+    pwConfirmRef.current.value = "";
   };
 
   const onSubmit = async (event) => {
@@ -30,22 +30,22 @@ export default function SignupModal(props) {
     let pw_confirm = pwConfirmRef.current.value;
     if (password === pw_confirm) {
       // 檢查確認密碼是否相同
-      let result = await Request('signup', {
+      let result = await RequestApi("signup", {
         account,
         password,
       });
-      if (result.code === '1' && result.msg) {
+      if (result.code === "1" && result.msg) {
         // 註冊成功
         showToast(ToastType.SUCCESS, result.msg);
         props.setOpen(false);
-      } else if (result.code === '0' && result.msg) {
+      } else if (result.code === "0" && result.msg) {
         // 帳號已被註冊
         resetForm();
         showToast(ToastType.ERROR, result.msg);
       }
     } else {
       showToast(ToastType.ERROR, ALERT_MSG.ERROR.PW_CONFIRM);
-      pwConfirmRef.current.value = '';
+      pwConfirmRef.current.value = "";
       pwConfirmRef.current.focus();
       setIsPwConfirmError(true);
     }

@@ -1,12 +1,11 @@
-import { useState, useRef } from 'react';
-import { Container, TextField, FormGroup, Button, Box } from '@mui/material';
-import SignupModal from './components/signupModal';
-import Request from './common/request';
+import { useState, useRef } from "react";
+import { Container, TextField, FormGroup, Button, Box } from "@mui/material";
+import SignupModal from "./components/signupModal";
+import RequestApi from "./common/requestApi";
+import { ToastContainer } from "react-toastify";
+import { showToast, ToastType } from "./common/toast";
+import "react-toastify/dist/ReactToastify.css";
 
-import { ToastContainer } from 'react-toastify';
-import { showToast, ToastType } from './common/toast';
-
-import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const [openSignupModal, setOpenSignupModal] = useState(false);
   const [isAccountError, setIsAccountError] = useState(false);
@@ -15,18 +14,18 @@ function App() {
   const pwRef = useRef(null);
 
   const resetForm = () => {
-    accountRef.current.value = '';
-    pwRef.current.value = '';
+    accountRef.current.value = "";
+    pwRef.current.value = "";
   };
   const onSubmit = async (event) => {
     event.preventDefault();
     let account = accountRef.current.value;
     let password = pwRef.current.value;
-    let result = await Request('login', {
+    let result = await RequestApi("login", {
       account,
       password,
     });
-    if (result.code === '1' && result.msg) {
+    if (result.code === "1" && result.msg) {
       showToast(ToastType.SUCCESS, result.msg);
     } else {
       setIsAccountError(true);
@@ -51,8 +50,8 @@ function App() {
               border: 1,
               p: 4,
               mt: 4,
-              borderRadius: '10px',
-              borderColor: 'primary.main',
+              borderRadius: "10px",
+              borderColor: "primary.main",
             }}
           >
             <form onSubmit={onSubmit}>
@@ -83,8 +82,8 @@ function App() {
                 <Button
                   variant="outlined"
                   style={{
-                    marginTop: '30px',
-                    padding: '10px 0',
+                    marginTop: "30px",
+                    padding: "10px 0",
                   }}
                   type="submit"
                 >
@@ -93,8 +92,8 @@ function App() {
                 <Button
                   variant="outlined"
                   style={{
-                    marginTop: '10px',
-                    padding: '10px 0',
+                    marginTop: "10px",
+                    padding: "10px 0",
                   }}
                   onClick={() => {
                     setOpenSignupModal(true);
